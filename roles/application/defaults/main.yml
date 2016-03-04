@@ -1,0 +1,18 @@
+---
+development: false
+
+web_user: deployer
+web_group: www
+web_key: ''
+
+hostname: deebox.deefour.me
+email: jason@deefour.me
+
+ruby_enabled: no
+ruby_version: 2.2.3
+
+app_env: development
+
+sites:
+  - host: app.dev
+    src: ~/Sites

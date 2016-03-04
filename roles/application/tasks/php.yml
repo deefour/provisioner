@@ -1,0 +1,67 @@
+---
+- name: php | install php
+  yum:
+    name: "{{ item }}"
+    enablerepo: remi,epel
+    state: present
+  with_items:
+    - php56
+    - php56-php
+    - php56-php-mcrypt
+    - php56-php-mbstring
+    - php56-php-pdo
+    - php56-php-mysql
+    - php56-php-gd
+  tags: php
+
+- name: php | enable
+  copy:
+    src: php.sh
+    dest: /etc/profile.d/php.sh
+    owner: root
+    group: root
+    mode: 0644
+  tags: php
+
+- name: php | set timezone
+  lineinfile:
+    state: present
+    create: yes
+    dest: /opt/remi/php56/root/etc/php.d/10-timezone.ini
+    regexp: "^date.timezone ="
+    insertafter: "^;date.timezone ="
+    line: "date.timezone = America/New_York"
+
+
+- name: php | get composer installer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /opt/composer
+  tags:
+    - composer
+    - php
+
+- name: php | install composer
+  shell: . /etc/profile && php /opt/composer --install-dir=/usr/local/bin
+  args:
+    creates: /usr/local/bin/composer
+  tags:
+    - php
+    - composer
+
+- name: php | rename composer
+  command: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+  args:
+    creates: /usr/local/bin/composer
+  tags:
+   - php
+   - composer
+
+- name: php | make composer executable
+  file:
+    path: /usr/local/bin/composer
+    mode: a+x
+    state: file
+  tags:
+   - php
+   - composer

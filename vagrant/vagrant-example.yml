@@ -1,0 +1,70 @@
+---
+- hosts: all
+
+  #
+  # By default, a vagrant play is going to merge all app, worker, and db server
+  # software/functionality into a single vagrant box.
+  #
+  roles:
+    - common
+    - application
+    - worker
+    - database
+    - vagrant
+
+  vars:
+    #
+    # Software like Mailhog is only installed for development boxes. The app_env
+    # is configured in Apache as both APP_ENV and RackEnv when Passenger is installed.
+    #
+    development: true
+    app_env: local
+
+    web_key: ~/.ssh/jason@deefour.me.pub
+    wheel_key: ~/.ssh/jason@deefour.me.pub
+
+    #
+    # Passwords must be encrypted.
+    #
+    # @link http://docs.ansible.com/ansible/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+    #
+    wheel_password: ""
+    root_password: ""
+
+    #
+    # Apache VirtualHosts will be set up for each host below. Vagrant will use NFS
+    # to sync the src folder into /var/www/[HOST_DOMAIN] on the vagrant box. You
+    # will be prompted to provide your host system's password to setup the directory
+    # sync.
+    #
+    sites:
+      - host: example.dev
+        src: ~/Sites/example.com
+        database:
+          name: example
+          user: exampleu
+          pass: asdf1234
+
+
+    #
+    # Ports to forward. Vagrant push
+    #
+    # 80   -> 8000
+    # 6379 -> 63790
+    #
+    ports:
+      - 80
+      - 6379
+      - 3306
+
+    #
+    # Ruby is not installed by default. Enable it here, and specify the version
+    # of ruby to install. This will also install chruby system-wide, bundler,
+    # and passenger along with it's apache module.
+    #
+    ruby_enabled: yes
+    ruby_version: 2.2.3
+
+  handlers:
+    - include: ../handlers/restart_services.yml
+

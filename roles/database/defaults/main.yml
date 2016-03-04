@@ -1,0 +1,9 @@
+---
+development: false
+
+redis_host: 127.0.0.1
+redis_port: 6379
+
+app_env: local
+
+elasticsearch_enabled: no

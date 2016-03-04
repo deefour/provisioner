@@ -1,0 +1,7 @@
+inventory
+.vagrant
+/vagrant/*
+/*.com.yml
+/*.com
+*.pem
+!/vagrant/vagrant-example.yml

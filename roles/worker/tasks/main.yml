@@ -1,0 +1,9 @@
+---
+- include: mailhog.yml
+  when: development
+
+- include: ssmtp.yml
+  when: development
+
+- include: beanstalkd.yml
+  when: beanstalkd_enabled

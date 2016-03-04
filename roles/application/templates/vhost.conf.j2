@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+  ServerName {{ item.host }}
+  DocumentRoot "/var/www/{{ item.host }}/public"
+
+  RewriteEngine On
+  RewriteCond %{HTTP:Authorization} ^(.*)
+  RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+  <Directory "/var/www/{{ item.host }}/public">
+    AllowOverride all
+  </Directory>
+</VirtualHost>

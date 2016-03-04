@@ -1,0 +1,17 @@
+---
+- name: daemonize | clone repository
+  git:
+    repo: git://github.com/bmc/daemonize.git
+    dest: /opt/daemonize
+  tags: daemonize
+
+- name: daemonize | install
+  shell: "{{ item }}"
+  args:
+    chdir: /opt/daemonize
+    creates: /usr/local/sbin/daemonize
+  with_items:
+    - ./configure
+    - make
+    - make install
+  tags: daemonize

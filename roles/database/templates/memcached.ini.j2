@@ -1,0 +1,8 @@
+[program:memcached]
+command=/usr/bin/memcached -p 11211 -u memcached -m 128 -c 1024 -t 4
+autostart=true
+autorestart=true
+user=root
+priority=100
+redirect_stderr=true
+stdout_logfile=/var/log/memcached/stdout.log

@@ -1,0 +1,14 @@
+---
+- name: java | download rpm
+  get_url:
+    url: http://download.oracle.com/otn-pub/java/jdk/8u65-b17/jdk-8u65-linux-x64.rpm
+    validate_certs: no
+    headers: "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
+    dest: /opt/jdk-8u65-linux-x64.rpm
+  tags: java
+
+- name: java | install
+  yum:
+    name: /opt/jdk-8u65-linux-x64.rpm
+    state: present
+  tags: java

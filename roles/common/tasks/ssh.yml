@@ -1,0 +1,83 @@
+---
+- name: ssh | change root passwd
+  user:
+    name: root
+    password: "{{ root_password }}"
+  tags: ssh
+
+- name: ssh | ensure remote hosts are in known_hosts
+  lineinfile:
+    dest: /root/.ssh/known_hosts
+    create: yes
+    state: present
+    line: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
+    regexp: "^{{ item }} | regex_escape()"
+  with_items:
+    - github.com
+    - bitbucket.org
+  tags: ssh
+
+- name: ssh | update sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart sshd
+  tags: ssh
+
+- name: ssh | be sure ssh_config is up to date
+  copy:
+    src: ssh_config
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart sshd
+  tags: ssh
+
+- name: ssh | create wheel user
+  user:
+    name: "{{ wheel_user }}"
+    state: present
+    createhome: yes
+    groups: wheel
+    password: "{{ wheel_password }}"
+  tags: ssh
+
+- name: ssh | add public key to wheel user
+  authorized_key:
+    user: "{{ wheel_user }}"
+    state: present
+    manage_dir: yes
+    key: "{{ lookup('file', wheel_key) }}"
+  tags: ssh
+
+- name: ssh | add wheel user to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^{{ wheel_user }}'
+    line: '{{ wheel_user }} ALL=(ALL) ALL'
+  tags: ssh
+
+- name: ssh | put user home directory on PATH
+  lineinfile:
+    dest: /etc/profile.d/path.sh
+    line: export PATH="$PATH:~/bin"
+    create: yes
+    state: present
+    owner: root
+    group: root
+  tags: ssh
+
+- name: ssh | put /usr/local/sbin directory on PATH
+  lineinfile:
+    dest: /etc/profile.d/path.sh
+    line: export PATH="$PATH:/usr/local/sbin"
+    create: yes
+    state: present
+    owner: root
+    group: root
+  tags: ssh

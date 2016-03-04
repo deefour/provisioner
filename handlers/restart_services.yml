@@ -1,0 +1,46 @@
+---
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+
+- name: restart redis
+  supervisorctl:
+    name: redis
+    state: restarted
+
+- name: restart mysql
+  service:
+    name: mysql
+    state: restarted
+
+- name: restart supervisor
+  service:
+    name: supervisord
+    state: restarted
+
+- name: restart memcached
+  service:
+    name: supervisord
+    state: restarted
+
+- name: restart fail2ban
+  service:
+    name: fail2ban
+    state: restarted
+
+- name: restart beanstalkd
+  service:
+    name: beanstalkd
+    state: restarted
+
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+
+- name: update supervisor
+  shell: supervisorctl reread  && supervisorctl update
+
+- name: restart supervisor
+  command: supervisor reread && supervisor update && supervisor start all

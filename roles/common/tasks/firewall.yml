@@ -1,0 +1,44 @@
+---
+- name: firewall | disable firewalld
+  service:
+    name: firewalld
+    enabled: no
+    state: stopped
+  tags: firewall
+
+- name: firewall | install iptables firewall
+  template:
+    src: firewall.j2
+    dest: /usr/local/bin/firewall
+    owner: root
+    group: root
+    mode: 0700
+  tags: firewall
+
+- name: firewall | run the firewall
+  shell: /usr/local/bin/firewall
+  tags: firewall
+
+- name: firewall | install fail2ban
+  yum:
+    name: fail2ban
+    enablerepo: epel
+    state: present
+  tags: firewall
+
+- name: firewall | start fail2ban service
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+  tags: firewall
+
+- name: firewall | copy jail.local config
+  template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart fail2ban
+  tags: firewall

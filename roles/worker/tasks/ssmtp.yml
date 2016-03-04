@@ -1,0 +1,15 @@
+---
+- name: ssmtp | install
+  yum:
+    pkg: ssmtp
+    state: installed
+  tags: ssmtp
+
+- name: ssmtp | copy ssmtp config
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: ssmtp

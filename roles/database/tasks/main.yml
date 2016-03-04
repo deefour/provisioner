@@ -1,0 +1,7 @@
+---
+- include: mysql.yml
+- include: redis.yml
+- include: memcached.yml
+- include: database-setup.yml
+- include: elasticsearch.yml
+  when: elasticsearch_enabled

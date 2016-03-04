@@ -1,0 +1,43 @@
+---
+- name: supervisor | install python setup tools
+  yum: name=python-setuptools state=installed
+  tags: yum
+
+- name: supervisor | install
+  shell: easy_install supervisor
+  args:
+    creates: /usr/bin/supervisorctl
+  tags: supervisor
+
+- name: supervisor | configure
+  copy:
+    src: supervisord.conf
+    dest: /etc/supervisord.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: supervisor
+
+- name: supervisor | prepare necessary directories
+  file: path={{item}} state=directory recurse=yes
+  with_items:
+    - /var/log/supervisord
+    - /etc/supervisor
+    - /var/run/supervisor
+  notify: restart supervisor
+  tags: supervisor
+
+- name: supervisor | copy init script
+  copy:
+    src: supervisord
+    dest: /etc/rc.d/init.d/supervisord
+    owner: root
+    group: root
+    mode: 0755
+  tags: supervisor
+
+- name: supervisord
+  service:
+    name: supervisord
+    enabled: yes
+    state: started

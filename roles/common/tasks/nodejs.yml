@@ -1,0 +1,7 @@
+---
+- name: nodejs | install
+  yum:
+    name: npm
+    enablerepo: epel
+    state: present
+  tags: nodejs

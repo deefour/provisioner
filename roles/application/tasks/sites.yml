@@ -1,0 +1,35 @@
+---
+- name: sites | create web root for each site
+  file:
+    path: "/var/www/{{ item.host }}"
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: 0755
+    state: directory
+  notify: restart httpd
+  with_items: "{{ sites }}"
+  tags:
+    - apache
+    - sites
+  when: development == false
+
+- name: sites | create apache vhost for each site
+  template:
+    src: vhost.conf.j2
+    dest: "/etc/httpd/conf.d/{{ item.host }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart httpd
+  with_items: "{{ sites }}"
+  tags:
+    - apache
+    - sites
+
+- name: sites | in development add vagrant user to web group
+  user:
+    name: vagrant
+    state: present
+    append: yes
+    groups: "{{ web_group }}"
+  when: development

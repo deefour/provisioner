@@ -1,0 +1,23 @@
+---
+development: false
+
+s3tools_access_key: ''
+s3tools_secret_key: ''
+
+wheel_user: dee4
+wheel_password: ''
+wheel_key: ''
+
+root_password: jMAV86Y4K49QP8b4L389
+
+java_enabled: no
+elasticsearch_enabled: no
+ruby_enabled: no
+ruby_version: 2.2.3
+
+app_env: development
+
+ssh_port: 22
+
+ip_whitelist:
+  - 127.0.0.1

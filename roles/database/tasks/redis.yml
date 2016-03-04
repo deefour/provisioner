@@ -1,0 +1,26 @@
+---
+- name: redis | update
+  yum:
+    name: redis
+    state: present
+  tags:
+    - redis
+
+- name: redis | copy supervisor config
+  copy:
+    src: redis.ini
+    dest: /etc/supervisor/redis.ini
+    owner: root
+    group: root
+    mode: 644
+  notify: restart supervisor
+  tags: redis
+
+- name: redis | update redis.conf
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis.conf
+    mode: 0644
+  notify: restart redis
+  tags:
+    - redis

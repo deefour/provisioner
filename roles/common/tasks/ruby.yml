@@ -1,0 +1,35 @@
+---
+- name: ruby | install chruby
+  script: ../scripts/chruby.sh
+  args:
+    creates: /opt/.ansible/chruby-0.3.9
+  tags: ruby
+
+- name: ruby | install ruby-install
+  script: ../scripts/ruby-install.sh
+  args:
+    creates: /opt/.ansible/ruby-install-0.5.0
+  tags: ruby
+
+- name: ruby | install ruby
+  command: ruby-install ruby {{ ruby_version }}
+  args:
+    creates: /opt/rubies/ruby-{{ ruby_version }}
+  tags: ruby
+
+- name: ruby | copy chruby.sh bootstrap
+  template:
+    src: chruby.sh.j2
+    dest: /etc/profile.d/chruby.sh
+    owner: root
+    group: root
+    mode: 0644
+  tags: ruby
+
+- name: ruby | install bundler
+  command: "/opt/rubies/ruby-{{ ruby_version }}/bin/gem install bundler"
+  args:
+    creates: "/opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/*/gems/bundler-*"
+  environment:
+    GEM_HOME: /opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/2.2.0
+  tags: ruby

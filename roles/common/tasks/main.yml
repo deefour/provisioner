@@ -1,0 +1,17 @@
+---
+- include: ssh.yml
+- include: setup.yml
+- include: yum.yml
+- include: ssh.yml
+- include: firewall.yml
+- include: supervisor.yml
+- include: git.yml
+- include: nodejs.yml
+- include: s3tools.yml
+- include: daemonize.yml
+
+- include: ruby.yml
+  when: ruby_enabled
+
+- include: java.yml
+  when: elasticsearch_enabled

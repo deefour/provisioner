@@ -1,0 +1,14 @@
+---
+- name: beanstalkd | install
+  yum:
+    name: beanstalkd
+    state: present
+    enablerepo: epel-testing
+  tags: beanstalk
+
+- name: beanstalkd | start service
+  service:
+    name: beanstalkd
+    state: started
+    enabled: yes
+  tags: beanstalk

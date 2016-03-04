@@ -1,0 +1,45 @@
+---
+- name: setup | update motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: 0644
+  tags: setup
+
+- name: setup | create /usr/local/var/log
+  file:
+    path: /usr/local/var/log
+    group: root
+    mode: 0755
+    state: directory
+  tags: setup
+
+- name: setup | create /usr/local/var/run
+  file:
+    path: /usr/local/var/run
+    group: root
+    mode: 0755
+    state: directory
+  tags: setup
+
+- name: setup | add /usr/local/bin to secure_path $PATH
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: 'secure_path'
+    line: 'Defaults secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
+  tags: setup
+
+- name: setup | copy /etc/gemrc
+  copy:
+    src: gemrc
+    dest: /etc/gemrc
+    owner: root
+    group: root
+    mode: 644
+    backup: yes
+  tags:
+    - setup
+    - ruby
+

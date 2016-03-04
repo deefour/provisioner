@@ -1,0 +1,25 @@
+---
+- name: mailhog | install
+  get_url:
+    url: https://github.com/mailhog/MailHog/releases/download/v0.1.7/MailHog_linux_amd64
+    dest: /usr/local/bin/mailhog
+    owner: root
+    group: root
+    mode: 0755
+  tags: mailhog
+
+- name: mailhog | copy mailhog init script
+  template:
+    src: mailhog.j2
+    dest: /etc/init.d/mailhog
+    owner: root
+    group: root
+    mode: 0755
+  tags: mailhog
+
+- name: mailhog | ensure start on boot
+  service:
+    name: mailhog
+    state: started
+    enabled: yes
+  tags: mailhog

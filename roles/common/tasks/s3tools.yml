@@ -1,0 +1,25 @@
+---
+- name: s3tools | install s3cmd repo
+  copy:
+    src: s3tools.repo
+    dest: /etc/yum.repos.d/s3tools.repo
+    owner: root
+    group: root
+    mode: 0644
+  tags: s3tools
+
+- name: s3tools | update
+  yum:
+    name: s3cmd
+    state: present
+  tags: s3tools
+
+- name: s3tools | update ~/.s3cfg
+  template:
+    src: s3cfg.j2
+    dest: /root/.s3cfg
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  tags: s3tools

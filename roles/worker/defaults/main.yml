@@ -1,0 +1,4 @@
+---
+development: false
+
+beanstalkd_enabled: true

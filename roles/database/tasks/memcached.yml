@@ -1,0 +1,26 @@
+---
+- name: memcached | install package
+  yum:
+    name: memcached
+    enablerepo: remi,epel
+    state: present
+  tags: memcached
+
+- name: memcached | create log directory
+  file:
+    path: /var/log/memcached
+    owner: root
+    group: root
+    mode: 0644
+    state: directory
+  tags: memcached
+
+- name: memcached | copy supervisor config
+  template:
+    src: memcached.ini.j2
+    dest: /etc/supervisor/memcached.ini
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart supervisor
+  tags: memcached

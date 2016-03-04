@@ -1,0 +1,9 @@
+[program:elasticsearch]
+command=/usr/share/elasticsearch/bin/elasticsearch
+user=elasticsearch
+environment=JAVA_OPTS="-Xmx64m -Xms32m",ES_MIN_MEM=32m,ES_MAX_MEM=64m
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/elasticsearch/stdout.log
+stderr_logfile=/var/log/elasticsearch/stderr.log

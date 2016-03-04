@@ -1,0 +1,52 @@
+---
+- name: mysql | delete anonymous user for host
+  mysql_user:
+    user: ""
+    host: "{{ ansible_hostname }}"
+    state: absent
+  tags: mysql
+
+- name: mysql | delete anonymous user for localhost
+  mysql_user:
+    user: ""
+    state: absent
+  tags: mysql
+
+- name: remove the MySQL test database
+  mysql_db:
+    db: test
+    state: absent
+  tags: mysql
+
+# 'localhost' needs to be the last item for idempotency, see
+# http://ansible.cc/docs/modules.html#mysql-user
+- name: mysql | change root password
+  mysql_user:
+    login_user: root
+    login_password: ""
+    name: root
+    password: ""
+    priv: "*.*:ALL,GRANT"
+    host: "{{ item }}"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  tags: mysql
+
+- name: mysql | create database
+  mysql_db:
+    name: "{{ item.database.name }}"
+  when: "{{ 'database' in item }}"
+  tags: mysql
+  with_items: "{{ sites }}"
+
+- name: mysql | add user
+  mysql_user:
+    name: "{{ item.database.user }}"
+    password: "{{ item.database.pass }}"
+    priv: "{{ item.database.name }}.*:ALL"
+  when: "{{ 'database' in item }}"
+  tags: mysql
+  with_items: "{{ sites }}"

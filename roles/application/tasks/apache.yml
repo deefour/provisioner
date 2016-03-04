@@ -1,0 +1,111 @@
+---
+- name: apache | install
+  yum:
+    name: "{{ item }}"
+    enablerepo: remi,epel
+    state: present
+  with_items:
+    - httpd
+    - mod_ssl
+    - httpd-devel
+    - apr-devel
+    - apr-util-devel
+  tags: apache
+
+- name: apache | make certs/ directory
+  file:
+    path: /etc/httpd/certs
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  tags: apache
+
+- name: apache | copy config
+  template:
+    src: httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: apache
+
+- name: apache | start service
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  tags: apache
+
+- name: apache | add apache user to web group
+  user:
+    name: apache
+    state: present
+    groups: "{{ web_group }}"
+    append: yes
+  tags: apache
+
+- name: apache | clear cgi-bin dir
+  file:
+    path: /var/www/cgi-bin
+    state: absent
+  tags: apache
+
+- name: apache | clear html dir
+  file:
+    path: /var/www/html
+    state: absent
+  tags: apache
+
+- name: apache | set blank index.htm in public root
+  copy:
+    src: index.html
+    dest: /var/www/index.html
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: 0644
+  tags: apache
+
+- name: apache | update welcome.conf
+  copy:
+    src: welcome.conf
+    dest: /etc/httpd/conf.d/welcome.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: apache
+
+- name: apache | install passenger
+  command: "/opt/rubies/ruby-{{ ruby_version }}/bin/gem install passenger"
+  args:
+    creates: "/opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/*/gems/passenger-*/bin/passenger"
+  environment:
+    GEM_HOME: /opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/2.2.0
+  tags:
+    - ruby
+    - apache
+  when: ruby_enabled
+
+- name: apache | update passenger.conf
+  template:
+    src: passenger.conf.j2
+    dest: /etc/httpd/conf.modules.d/passenger.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - apache
+    - ruby
+  when: ruby_enabled
+
+- name: apache | build passenger apache module
+  command: "/opt/rubies/ruby-{{ ruby_version }}/bin/passenger-install-apache2-module --auto"
+  args:
+    creates: "/opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/*/gems/passenger-*/buildout/apache2/mod_passenger.so"
+  environment:
+    GEM_HOME: /opt/rubies/ruby-{{ ruby_version }}/lib/ruby/gems/2.2.0
+  notify: restart httpd
+  tags:
+    - ruby
+    - apache
+  when: ruby_enabled

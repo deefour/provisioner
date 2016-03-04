@@ -1,0 +1,45 @@
+---
+- name: elasticsearch | add GPG key
+  rpm_key:
+    key: http://packages.elasticsearch.org/GPG-KEY-elasticsearch
+    state: present
+  tags: elasticsearch
+
+- name: elasticsearch | install repo
+  copy:
+    src: elasticsearch.repo
+    dest: /etc/yum.repos.d/elasticsearch.repo
+    mode: 0644
+  tags: elasticsearch
+
+- name: elasticsearch | install
+  yum:
+    name: elasticsearch
+    state: installed
+  tags: elasticsearch
+
+- name: elasticsearch | start service
+  service:
+    name: elasticsearch
+    state: started
+    enabled: yes
+  tags: elasticsearch
+
+- name: elasticsearch | create log directory
+  file:
+    path: /var/log/elasticsearch
+    owner: root
+    group: root
+    mode: 0644
+    state: directory
+  tags: elasticsearch
+
+- name: elasticsearch | copy supervisor config
+  template:
+    src: elasticsearch.ini.j2
+    dest: /etc/supervisor/elasticsearch.ini
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart supervisor
+  tags: elasticsearch
