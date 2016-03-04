@@ -1,6 +1,6 @@
 # Provisioner
 
-![License](https://poser.pugx.org/deefour/provisioner/license)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://deefour.mit-license.org)
 
 Ansible configuration for a Centos7 LAMP server, `Vagrantfile` included.
 
