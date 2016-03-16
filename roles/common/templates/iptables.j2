@@ -1,0 +1,33 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+-A INPUT -i lo -j ACCEPT
+
+# accept already established connection (lDNS queries etc)
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# put your ip here and get full access to your server
+{% for ip in ip_whitelist %}
+  -A INPUT -s {{ ip }} -j ACCEPT
+{% endfor %}
+
+# if you want your server to respond to ping request
+-A INPUT -p icmp  -j ACCEPT
+
+# open a specific port (here HTTP)
+-A INPUT -p tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp --dport 443 -j ACCEPT
+-A INPUT -p tcp --dport {{ ssh_port }} -j ACCEPT
+
+{% if development and ports %}
+  {% for port in ports %}
+-A INPUT -p tcp --dport {{ port }} -j ACCEPT
+  {% endfor %}
+{% endif %}
+
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
