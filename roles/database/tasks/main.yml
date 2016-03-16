@@ -3,5 +3,9 @@
 - include: redis.yml
 - include: memcached.yml
 - include: database-setup.yml
+
+- include: database-backup.yml
+  when: db_backups_enabled
+
 - include: elasticsearch.yml
   when: elasticsearch_enabled

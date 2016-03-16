@@ -1,6 +1,9 @@
 ---
 development: false
 
+db_backups_enabled: false
+db_backups_s3_bucket: ''
+
 redis_host: 127.0.0.1
 redis_port: 6379
 

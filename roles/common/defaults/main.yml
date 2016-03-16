@@ -3,6 +3,8 @@ development: false
 
 s3tools_access_key: ''
 s3tools_secret_key: ''
+s3tools_gpg_passphrase: ''
+s3_tools_bucket: ''
 
 wheel_user: dee4
 wheel_password: ''

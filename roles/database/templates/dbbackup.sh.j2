@@ -1,7 +1,0 @@
-#!/bin/bash
-
-dbname="{{ db_name }}"
-date=`date +%Y-%m-%d--%H-%M-%S`
-pubkey="/home/{{ web_user }}/.ssh/mysqldump-{{ hostname }}.pub.pem"
-
-mysqldump --single-transaction $dbname | gzip -c | openssl smime -encrypt -binary -text -aes256 -out "${dbname}--${date}.sql.gz.enc" -outform DER $pubkey

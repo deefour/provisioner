@@ -1,0 +1,33 @@
+- name: backups | create bin/ directory for root
+  file:
+    path: /root/bin
+    state: directory
+    recurse: true
+  tags: backup
+
+- name: backups | create bin/ directory for root
+  file:
+    path: /root/.backups/db
+    state: directory
+    recurse: true
+  tags: backup
+
+- name: backups | push backup script to the server
+  template:
+    src: backup-database.j2
+    dest: /root/bin/backup-database
+    owner: root
+    group: root
+    mode: 0700
+  tags: backup
+
+- name: backups | configure cron
+  cron:
+    name: "database backup for {{ item.database.name }}"
+    user: root
+    minute: 0
+    job: /root/bin/backup-database {{ item.database.name }}  > /dev/null 2>&1
+    state: present
+  when: "{{ 'database' in item }}"
+  with_items: "{{ sites }}"
+  tags: backup

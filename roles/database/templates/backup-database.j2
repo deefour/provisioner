@@ -1,0 +1,26 @@
+#!/bin/bash
+
+die () {
+    echo >&2 "$@"
+    exit 1
+}
+
+[ "$#" -eq 1 ] || die "A database name is required as the first argument."
+
+dbname="$1"
+year=`date +%Y`
+month=`date +%m`
+day=`date +%d`
+date="${year}-${month}-${day}--$(date +%H-%M-%S)"
+directory="$HOME/.backups/db/${dbname}/${year}/${month}/${day}"
+filename="${dbname}--${date}.sql.gz"
+
+mkdir -p "$directory"
+
+mysqldump --single-transaction $dbname | gzip > "${directory}/${filename}"
+
+echo "Backup saved to: ${directory}/${filename}"
+
+{% if db_backups_s3_bucket %}
+s3cmd put "${directory}/${filename}" "s3://{{ db_backups_s3_bucket }}/backups/db/${year}/${month}/${day}/${filename}"
+{% endif %}

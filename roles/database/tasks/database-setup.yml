@@ -50,3 +50,4 @@
   when: "{{ 'database' in item }}"
   tags: mysql
   with_items: "{{ sites }}"
+
