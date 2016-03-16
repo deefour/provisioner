@@ -34,6 +34,31 @@
     state: directory
   tags: elasticsearch
 
+- name: elasticsearch | configure network.host
+  lineinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    regexp: "^network.host"
+    insertafter: "^#network.host"
+    line: "network.host: [_tun0_, _local_]"
+    state: present
+
+- name: elasticsearch | configure network.host
+  lineinfile:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    regexp: "^bootstrap.mlockall"
+    insertafter: "^#bootstrap.mlockall"
+    line: "bootstrap.mlockall: true"
+    state: present
+
+- name: elasticsearch | config changes
+  lineinfile:
+    dest: /etc/sysconfig/elasticsearch
+    regexp:
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "MAX_LOCKED_MEMORY=unlimited"
+
 - name: elasticsearch | copy supervisor config
   template:
     src: elasticsearch.ini.j2
