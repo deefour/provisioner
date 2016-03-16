@@ -28,7 +28,9 @@
     password: ""
     priv: "*.*:ALL,GRANT"
     host: "{{ item }}"
+  when: development or item != "%"
   with_items:
+    - "%"
     - "{{ ansible_hostname }}"
     - 127.0.0.1
     - ::1
